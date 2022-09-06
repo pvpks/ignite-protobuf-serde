@@ -1,0 +1,60 @@
+plugins {
+    id 'org.jetbrains.kotlin.jvm' version '1.5.10'
+    id 'java'
+    id "com.google.protobuf" version "0.8.19"
+}
+
+group 'org.example'
+version '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testCompileClasspath("com.google.protobuf:protobuf-gradle-plugin:0.8.1")
+    testRuntimeClasspath("com.google.protobuf:protobuf-gradle-plugin:0.8.1")
+
+    // protobuf
+    implementation 'com.google.protobuf:protobuf-gradle-plugin:0.8.0'
+    implementation 'com.google.protobuf:protobuf-java-util:3.21.5'
+
+    // ignite
+    runtimeOnly("com.h2database:h2:1.4.197")
+    implementation group: 'org.apache.ignite', name: 'ignite-core', version: '2.11.1'
+    implementation group: 'org.apache.ignite', name: 'ignite-spring', version: '2.11.1'
+    implementation group: 'org.apache.ignite', name: 'ignite-kubernetes', version: '2.11.1'
+
+    implementation "org.jetbrains.kotlin:kotlin-stdlib"
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.0'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.7.0'
+}
+
+protobuf {
+    generatedFilesBaseDir = "$projectDir/src/"
+    protoc {
+        artifact = "com.google.protobuf:protoc:3.2.0"
+    }
+    plugins {
+        grpc {
+            artifact = 'io.grpc:protoc-gen-grpc-java:1.4.0'
+        }
+    }
+    generateProtoTasks {
+        all()*.plugins {
+            grpc {}
+        }
+    }
+}
+
+sourceSets {
+    main {
+        java {
+            srcDirs 'build/generated/source/proto/main/java'
+        }
+    }
+}
+
+test {
+    useJUnitPlatform()
+}
